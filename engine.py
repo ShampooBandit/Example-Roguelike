@@ -11,8 +11,8 @@ class Engine:
         self.rng = np.random.default_rng()
         self.dungeon.generateMap(self.rng)
 
-    def handleInput(self, keyboard):
-        self.player.handleInput(keyboard)
+    def handleInput(self, key):
+        self.player.handleInput(key)
 
     def draw(self, screen_surface):
         self.dungeon.draw(screen_surface)

@@ -9,5 +9,5 @@ class Actor:
         surface.blit(self.sprite, self.position)
 
 class Player(Actor):
-    def handleInput(self, keys):
+    def handleInput(self, key):
         pass

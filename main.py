@@ -12,19 +12,19 @@ font = pygame.font.SysFont('lucida console', 16)
 import engine
 
 running = True
-keyboard = {}
+#keyboard = {}
 
 game_engine = engine.Engine()
 
 while running:
-    keyboard = pygame.key.get_pressed()
+    #keyboard = pygame.key.get_pressed()
 
     for event in pygame.event.get():
         match event.type:
             case pygame.QUIT:
                 running = False
             case pygame.KEYDOWN:
-                game_engine.handleInput(keyboard)
+                game_engine.handleInput(event.key)
             case _:
                 pass
 
