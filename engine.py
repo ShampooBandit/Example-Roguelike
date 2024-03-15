@@ -12,6 +12,9 @@ class Engine:
         self.dungeon.generateMap(self.rng)
 
     def handleInput(self, key):
+        if key == pygame.K_SPACE:
+            self.dungeon.generateMap(self.rng)
+            
         self.player.handleInput(key)
 
     def draw(self, screen_surface):

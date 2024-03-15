@@ -13,6 +13,8 @@ class Map:
 
     #Here we can generate something simple, later we can replace this with more complex map generation
     def generateMap(self, rng):
+        self.tiles = np.zeros((self.width, self.height))
+        
         rooms = rng.integers(3, 9, endpoint=True)
 
         for i in range(rooms):
