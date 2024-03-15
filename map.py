@@ -14,7 +14,7 @@ class Map:
     #Here we can generate something simple, later we can replace this with more complex map generation
     def generateMap(self, rng):
         self.tiles = np.zeros((self.width, self.height))
-        
+
         rooms = rng.integers(3, 9, endpoint=True)
 
         for i in range(rooms):
@@ -31,6 +31,7 @@ class Map:
 
     #Since maps aren't dynamic right now, we can determine connected tiles and calculate which sprites to use once instead of every frame
     def buildSurface(self):
+        self.surface = pygame.Surface((self.width*16, self.height*16))
         for x in range(self.width):
             for y in range(self.height):
                 if self.tiles[x][y] > 0:
