@@ -10,18 +10,20 @@ class Map:
         self.objects = np.zeros(size)
         self.enemies = np.zeros(32)
         self.surface = pygame.Surface((size[0]*16, size[1]*16))
+        self.rooms = []
 
     #Here we can generate something simple, later we can replace this with more complex map generation
     def generateMap(self, rng):
         self.tiles = np.zeros((self.width, self.height))
 
-        rooms = rng.integers(3, 9, endpoint=True)
+        room_count = rng.integers(3, 9, endpoint=True)
 
-        for i in range(rooms):
+        for i in range(room_count):
             width = rng.integers(5, 10, endpoint=True)
             height = rng.integers(5, 10, endpoint=True)
             xpos = rng.integers(0, self.width-width)
             ypos = rng.integers(0, self.height-height)
+            self.rooms.append(pygame.Rect(width, height, xpos, ypos))
 
             for x in range(xpos, xpos+width):
                 for y in range(ypos, ypos+height):

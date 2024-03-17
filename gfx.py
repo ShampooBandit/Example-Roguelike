@@ -1,11 +1,11 @@
 import pygame
 import os
 
-directory = 'gfx\Characters'
+directory = 'gfx/Characters'
 f1 = os.path.join(directory, 'Player0.png')
 f2 = os.path.join(directory, 'Pest0.png')
 
-directory = 'gfx\Objects'
+directory = 'gfx/Objects'
 f3 = os.path.join(directory, 'Floor.png')
 
 PLAYER_SPRITES = []

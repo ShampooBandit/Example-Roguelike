@@ -10,4 +10,4 @@ class Actor:
 
 class Player(Actor):
     def handleInput(self, key):
-        pass
+        return False
