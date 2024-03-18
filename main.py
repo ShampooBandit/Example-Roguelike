@@ -6,7 +6,7 @@ screen = pygame.display.set_mode((1280, 720), pygame.HWSURFACE)
 screen_surface = screen.copy()
 screen_scale = (screen.get_width() * 1, screen.get_height() * 1)
 clock = pygame.time.Clock()
-font = pygame.font.SysFont('lucida console', 16)
+font = pygame.font.SysFont('gfx/GUI/SDS_8x8.ttf', 8)
 
 import engine
 running = True

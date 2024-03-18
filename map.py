@@ -6,15 +6,15 @@ class Map:
     def __init__(self, size=(40,40)):
         self.width = size[0]
         self.height = size[1]
-        self.tiles = np.zeros(size)
-        self.objects = np.zeros(size)
+        self.tiles = np.zeros(size, dtype=int)
+        self.objects = np.zeros(size, dtype=int)
         self.enemies = np.zeros(32)
         self.surface = pygame.Surface((size[0]*16, size[1]*16))
         self.rooms = []
 
     #Here we can generate something simple, later we can replace this with more complex map generation
     def generateMap(self, rng):
-        self.tiles = np.zeros((self.width, self.height))
+        self.tiles = np.zeros((self.width, self.height), dtype=int)
 
         room_count = rng.integers(3, 9, endpoint=True)
 
@@ -37,7 +37,7 @@ class Map:
         for x in range(self.width):
             for y in range(self.height):
                 if self.tiles[x][y] > 0:
-                    self.surface.blit(gfx.getTileSprite(int(self.tiles[x][y]), self.tiles, (x, y), (self.width, self.height)), (x*16,y*16))
+                    self.surface.blit(gfx.getTileSprite(self.tiles[x][y], self.tiles, (x, y), (self.width, self.height)), (x*16,y*16))
 
     def draw(self, surf):
         surf.blit(self.surface, (0,0))
