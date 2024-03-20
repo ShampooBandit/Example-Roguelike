@@ -13,8 +13,10 @@ class Actor(pygame.sprite.Sprite):
 
     def setPosition(self, position):
         self.position = position
-        self.rect[0] = position[0] * 16
-        self.rect[1] = position[1] * 16
+
+    def adjustToCamera(self, camera):
+        self.rect[0] = (self.position[0] - camera[0]) * 16 + 320
+        self.rect[1] = (self.position[1] - camera[1]) * 16 + 32
 
 class Player(Actor):
     def handleInput(self, key, dungeon):
@@ -43,5 +45,6 @@ class Player(Actor):
         surface.blit(self.image, self.rect)
     
 class Enemy(Actor):
-    def update(self):
-        pass
+    def update(self, camera):
+        self.rect[0] = (self.position[0] - camera[0]) * 16 + 320
+        self.rect[1] = (self.position[1] - camera[1]) * 16 + 32

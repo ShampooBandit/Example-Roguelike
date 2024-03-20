@@ -13,7 +13,7 @@ class Map:
         self.memory = np.zeros(size, dtype=bool)
         self.solid = np.ones(size, dtype=bool)
         self.enemies = pygame.sprite.Group()
-        self.surface = pygame.Surface((size[0]*16, size[1]*16))
+        self.visible_enemies = pygame.sprite.Group()
         self.rooms = []
 
     #Here we can generate something simple, later we can replace this with more complex map generation
@@ -65,25 +65,29 @@ class Map:
             self.solid[pos[0]][pos[1]] = 1
 
     def buildSurface(self, camera):
-        self.surface = pygame.Surface((camera[2]*16, camera[3]*16))
-
-        for x in range(camera[0], camera[0] + camera[2]):
-            for y in range(camera[1], camera[1] + camera[3]):
-                if self.tiles[x][y] > 0:
-                    if self.visible[x][y]:
-                        self.surface.blit(gfx.getTileSprite(self.tiles[x][y], self.tiles, (x, y), (self.width, self.height)), (x*16,y*16))
-                    elif self.memory[x][y]:
-                        tile = gfx.getTileSprite(self.tiles[x][y], self.tiles, (x, y), (self.width, self.height)).copy()
+        self.surface = pygame.Surface((camera[2] * 16, camera[3] * 16))
+        
+        for x in range(0, camera[2]):
+            xpos = camera[0] + x
+            for y in range(0, camera[3]):
+                ypos = camera[1] + y
+                if self.tiles[xpos][ypos] > 0:
+                    if self.visible[xpos][ypos]:
+                        self.surface.blit(gfx.getTileSprite(self.tiles[xpos][ypos], self.tiles, (xpos, ypos), (self.width, self.height)), (x * 16, y * 16))
+                    elif self.memory[xpos][ypos]:
+                        tile = gfx.getTileSprite(self.tiles[xpos][ypos], self.tiles, (xpos, ypos), (self.width, self.height))
                         tile = pygame.transform.grayscale(tile)
-                        self.surface.blit(tile, (x*16,y*16))
+                        self.surface.blit(tile, (x * 16, y * 16))
+                        
+        self.visible_enemies.draw(self.surface)
 
     def updateVisible(self, position, radius, camera):
         self.visible = np.zeros((self.width, self.height), dtype=bool)
 
         x1 = max(position[0] - radius, 0)
-        x2 = min(position[0] + radius, self.width - 1)
+        x2 = min(position[0] + radius + 1, self.width - 1)
         y1 = max(position[1] - radius, 0)
-        y2 = min(position[1] + radius, self.height - 1)
+        y2 = min(position[1] + radius + 1, self.height - 1)
 
         self.visible[x1:x2, y1:y2] = 1
         self.memory[x1:x2, y1:y2] = 1
@@ -108,4 +112,3 @@ class Map:
 
     def draw(self, surf):
         surf.blit(self.surface, (320, 32))
-        self.enemies.draw(surf)
