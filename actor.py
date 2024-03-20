@@ -7,7 +7,17 @@ class Actor(pygame.sprite.Sprite):
         self.position = position
         self.rect = pygame.Rect(position[0] * 16, position[1] * 16, 16, 16)
         self.vision_radius = 6
-        self.equipment = {}
+        self.equipment = {
+            'Left Hand': None,
+            'Right Hand': None,
+            'Left Ring Finger': None,
+            'Right Ring Finger': None,
+            'Head': None,
+            'Neck': None,
+            'Torso': None,
+            'Legs': None,
+            'Feet': None
+        }
         #Stats in order of HP, MP, Strength, Defence, Intelligence, Agility
         self.base_stats = [10, 0, 3, 2, 2, 2]
         self.current_stats = [10, 0, 3, 2, 2, 2]
@@ -53,14 +63,48 @@ class Player(Actor):
                 if item:
                     self.inventory.append(item)
                     action = 'pickup'
+                    self.autoEquip(self.inventory[-1])
         
         return action
     
+    def autoEquip(self, item):
+        match item.slot:
+            case 'hand':
+                if self.equipment['Left Hand'] == None:
+                    self.equipment['Left Hand'] = item
+                elif self.equipment['Right Hand'] == None:
+                    self.equipment['Right Hand'] = item
+        self.updateStats()
+
+    def updateStats(self):
+        self.current_stats = self.base_stats.copy()
+        for value in self.equipment.values():
+            if value:
+                i = 0
+                for stat in value.stats:
+                    self.current_stats[i] += stat
+                    i += 1
+    
     def draw(self, surface, font):
+        y = 32
+        for k, v in self.equipment.items():
+            if v:
+                text = font.render(k + ' ' + v.name, False, pygame.Color('white'))
+            else:
+                text = font.render(k + ' None', False, pygame.Color('white'))
+            surface.blit(text, (0, y))
+            y += 16
+
+        y += 16
+        for n in self.current_stats:
+            text = font.render(str(n), False, pygame.Color('white'))
+            surface.blit(text, (0, y))
+            y += 16
+
         y = 32
         for i in self.inventory:
             text = font.render(i.name, False, pygame.Color('white'))
-            surface.blit(text, (128, y))
+            surface.blit(text, (1000, y))
             y += 16
         surface.blit(self.image, self.rect)
     
