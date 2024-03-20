@@ -2,17 +2,17 @@ import numpy as np
 import pygame
 import gfx
 import actor
+import item
 
 class Map:
     def __init__(self, size=(120,120)):
         self.width = size[0]
         self.height = size[1]
         self.tiles = np.zeros(size, dtype=int)
-        self.objects = np.zeros(size, dtype=int)
         self.visible = np.zeros(size, dtype=bool)
         self.memory = np.zeros(size, dtype=bool)
         self.solid = np.ones(size, dtype=bool)
-        #self.enemies = pygame.sprite.Group()
+        self.items = np.zeros(size, dtype=object)
         self.enemies = np.zeros(size, dtype=object)
         self.all_enemies = pygame.sprite.Group()
         self.visible_enemies = pygame.sprite.Group()
@@ -67,6 +67,10 @@ class Map:
             self.all_enemies.add(self.enemies[pos[0]][pos[1]])
             self.solid[pos[0]][pos[1]] = 1
 
+        for i in range(15):
+            pos = self.getRandomRoomPosition(rng)
+            self.items[pos[0]][pos[1]] = item.Item(gfx.WEAPON_SPRITES[0], pos)
+
     #Stitch together the visible tiles to render to the screen
     def buildSurface(self, camera):
         self.surface = pygame.Surface((camera[2] * 16, camera[3] * 16))
@@ -80,7 +84,10 @@ class Map:
                     if self.visible[xpos][ypos]:
                         self.surface.blit(gfx.getTileSprite(self.tiles[xpos][ypos], self.tiles, (xpos, ypos), (self.width, self.height)), (x * 16, y * 16))
                         if self.enemies[xpos][ypos]:
-                            self.visible_enemies.add(self.enemies[xpos][ypos])
+                            #self.visible_enemies.add(self.enemies[xpos][ypos])
+                            self.surface.blit(self.enemies[xpos][ypos].image, (x * 16, y * 16))
+                        if self.items[xpos][ypos]:
+                            self.surface.blit(self.items[xpos][ypos].image, (x * 16, y * 16))
                     elif self.memory[xpos][ypos]:
                         tile = gfx.getTileSprite(self.tiles[xpos][ypos], self.tiles, (xpos, ypos), (self.width, self.height))
                         tile = pygame.transform.grayscale(tile)
@@ -114,6 +121,15 @@ class Map:
     
     def checkValidTile(self, dest):
         return self.solid[dest[0]][dest[1]] == 0
+    
+    def pickupItemAtTile(self, dest):
+        if self.items[dest[0]][dest[1]]:
+            it = self.items[dest[0]][dest[1]]
+            self.items[dest[0]][dest[1]] = None
+            return it
+        else:
+            return None
+            
 
     def draw(self, surf):
         surf.blit(self.surface, (320, 32))

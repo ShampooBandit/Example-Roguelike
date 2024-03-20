@@ -6,9 +6,12 @@ class Actor(pygame.sprite.Sprite):
         self.image = sprite
         self.position = position
         self.rect = pygame.Rect(position[0] * 16, position[1] * 16, 16, 16)
-        self.vision_radius = 4
+        self.vision_radius = 6
         self.equipment = {}
-        self.stats = {}
+        #Stats in order of HP, MP, Strength, Defence, Intelligence, Agility
+        self.base_stats = [10, 0, 3, 2, 2, 2]
+        self.current_stats = [10, 0, 3, 2, 2, 2]
+        self.inventory = []
 
     def update(self):
         pass
@@ -21,6 +24,11 @@ class Actor(pygame.sprite.Sprite):
         self.rect[1] = (self.position[1] - camera[1]) * 16 + 32
 
 class Player(Actor):
+    def __init__(self, sprite, position):
+        super().__init__(sprite, position)
+        self.base_stats = [25, 0, 3, 2, 2, 2]
+        self.current_stats = [25, 0, 3, 2, 2, 2]
+
     def handleInput(self, key, dungeon):
         action = ''
         match key:
@@ -40,10 +48,20 @@ class Player(Actor):
                 if dungeon.checkValidTile((self.position[0], self.position[1]+1)):
                     action = 'down'
                     self.setPosition((self.position[0], self.position[1] + 1))
+            case pygame.K_KP_ENTER | pygame.K_RETURN:
+                item = dungeon.pickupItemAtTile(self.position)
+                if item:
+                    self.inventory.append(item)
+                    action = 'pickup'
         
         return action
     
-    def draw(self, surface):
+    def draw(self, surface, font):
+        y = 32
+        for i in self.inventory:
+            text = font.render(i.name, False, pygame.Color('white'))
+            surface.blit(text, (128, y))
+            y += 16
         surface.blit(self.image, self.rect)
     
 class Enemy(Actor):

@@ -7,10 +7,15 @@ f2 = os.path.join(directory, 'Pest0.png')
 
 directory = 'gfx/Objects'
 f3 = os.path.join(directory, 'Floor.png')
+f4 = os.path.join(directory, 'Wall.png')
+
+directory = 'gfx/Items'
+f5 = os.path.join(directory, 'ShortWep.png')
 
 PLAYER_SPRITES = []
 MONSTER_SPRITES = []
 FLOOR_SPRITES = []
+WEAPON_SPRITES = []
 
 if os.path.isfile(f1):
     PLAYER_SPRITE_SHEET = pygame.image.load_extended(f1)
@@ -47,6 +52,12 @@ if os.path.isfile(f3):
     FLOOR_SPRITES[0].append(floor_1.subsurface(32,16,16,16)) # 1101
     FLOOR_SPRITES[0].append(floor_1.subsurface(16,32,16,16)) # 1110
     FLOOR_SPRITES[0].append(floor_1.subsurface(16,16,16,16)) # 1111
+
+if os.path.isfile(f5):
+    WEAPON_SPRITE_SHEET = pygame.image.load_extended(f5)
+    WEAPON_SPRITE_SHEET = WEAPON_SPRITE_SHEET.convert_alpha()
+
+    WEAPON_SPRITES.append(WEAPON_SPRITE_SHEET.subsurface(0,0,16,16))
 
 def getTileSprite(index, tiles, center, size):
     x = center[0]

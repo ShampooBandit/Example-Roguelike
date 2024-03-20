@@ -30,7 +30,7 @@ while running:
 
     game_engine.update()
 
-    game_engine.draw(screen_surface)
+    game_engine.draw(screen_surface, font)
 
     screen.blit(pygame.transform.scale(screen_surface, screen_scale), (0,0))
     pygame.display.flip()

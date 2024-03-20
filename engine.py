@@ -56,7 +56,7 @@ class Engine:
             self.repeat_timer = -1
             self.repeat_key = -1
 
-    def draw(self, screen_surface):
+    def draw(self, screen_surface, font):
         self.dungeon.draw(screen_surface)
         self.dungeon.visible_enemies.draw(screen_surface)
-        self.player.draw(screen_surface)
+        self.player.draw(screen_surface, font)
