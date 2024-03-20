@@ -7,6 +7,8 @@ class Actor(pygame.sprite.Sprite):
         self.position = position
         self.rect = pygame.Rect(position[0] * 16, position[1] * 16, 16, 16)
         self.vision_radius = 4
+        self.equipment = {}
+        self.stats = {}
 
     def update(self):
         pass
@@ -45,6 +47,5 @@ class Player(Actor):
         surface.blit(self.image, self.rect)
     
 class Enemy(Actor):
-    def update(self, camera):
-        self.rect[0] = (self.position[0] - camera[0]) * 16 + 320
-        self.rect[1] = (self.position[1] - camera[1]) * 16 + 32
+    def update(self):
+        pass

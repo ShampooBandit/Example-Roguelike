@@ -25,7 +25,7 @@ while running:
 
     screen_surface.fill(pygame.Color(0,30,30))
 
-    game_engine.draw(screen_surface, font)
+    game_engine.draw(screen_surface)
 
     screen.blit(pygame.transform.scale(screen_surface, screen_scale), (0,0))
     pygame.display.flip()

@@ -12,7 +12,9 @@ class Map:
         self.visible = np.zeros(size, dtype=bool)
         self.memory = np.zeros(size, dtype=bool)
         self.solid = np.ones(size, dtype=bool)
-        self.enemies = pygame.sprite.Group()
+        #self.enemies = pygame.sprite.Group()
+        self.enemies = np.zeros(size, dtype=object)
+        self.all_enemies = pygame.sprite.Group()
         self.visible_enemies = pygame.sprite.Group()
         self.rooms = []
 
@@ -61,11 +63,14 @@ class Map:
         enemy_count = rng.integers(room_count, room_count + 10)
         for i in range(enemy_count):
             pos = self.getRandomRoomPosition(rng)
-            pygame.sprite.Group.add(self.enemies, actor.Enemy(gfx.MONSTER_SPRITES[0], pos))
+            self.enemies[pos[0]][pos[1]] = actor.Enemy(gfx.MONSTER_SPRITES[0], pos)
+            self.all_enemies.add(self.enemies[pos[0]][pos[1]])
             self.solid[pos[0]][pos[1]] = 1
 
+    #Stitch together the visible tiles to render to the screen
     def buildSurface(self, camera):
         self.surface = pygame.Surface((camera[2] * 16, camera[3] * 16))
+        self.visible_enemies.empty()
         
         for x in range(0, camera[2]):
             xpos = camera[0] + x
@@ -74,12 +79,12 @@ class Map:
                 if self.tiles[xpos][ypos] > 0:
                     if self.visible[xpos][ypos]:
                         self.surface.blit(gfx.getTileSprite(self.tiles[xpos][ypos], self.tiles, (xpos, ypos), (self.width, self.height)), (x * 16, y * 16))
+                        if self.enemies[xpos][ypos]:
+                            self.visible_enemies.add(self.enemies[xpos][ypos])
                     elif self.memory[xpos][ypos]:
                         tile = gfx.getTileSprite(self.tiles[xpos][ypos], self.tiles, (xpos, ypos), (self.width, self.height))
                         tile = pygame.transform.grayscale(tile)
                         self.surface.blit(tile, (x * 16, y * 16))
-                        
-        self.visible_enemies.draw(self.surface)
 
     def updateVisible(self, position, radius, camera):
         self.visible = np.zeros((self.width, self.height), dtype=bool)
