@@ -17,7 +17,6 @@ while running:
     screen_surface.fill(pygame.Color(0,30,30))
 
     for event in pygame.event.get():
-        text = font.render(str(event.type), False, pygame.Color(255,255,255))
         match event.type:
             case pygame.QUIT:
                 running = False

@@ -1,8 +1,10 @@
 import numpy as np
+import math
 import pygame
 import gfx
 import actor
 import item
+import lighting
 
 class Map:
     def __init__(self, size=(120,120)):
@@ -65,7 +67,6 @@ class Map:
             pos = self.getRandomRoomPosition(rng)
             self.enemies[pos[0]][pos[1]] = actor.Enemy(gfx.MONSTER_SPRITES[0], pos)
             self.all_enemies.add(self.enemies[pos[0]][pos[1]])
-            self.solid[pos[0]][pos[1]] = 1
 
         for i in range(15):
             pos = self.getRandomRoomPosition(rng)
@@ -84,7 +85,7 @@ class Map:
                     if self.visible[xpos][ypos]:
                         self.surface.blit(gfx.getTileSprite(self.tiles[xpos][ypos], self.tiles, (xpos, ypos), (self.width, self.height)), (x * 16, y * 16))
                         if self.enemies[xpos][ypos]:
-                            #self.visible_enemies.add(self.enemies[xpos][ypos])
+                            self.visible_enemies.add(self.enemies[xpos][ypos])
                             self.surface.blit(self.enemies[xpos][ypos].image, (x * 16, y * 16))
                         if self.items[xpos][ypos]:
                             self.surface.blit(self.items[xpos][ypos].image, (x * 16, y * 16))
@@ -92,23 +93,20 @@ class Map:
                         tile = gfx.getTileSprite(self.tiles[xpos][ypos], self.tiles, (xpos, ypos), (self.width, self.height))
                         tile = pygame.transform.grayscale(tile)
                         self.surface.blit(tile, (x * 16, y * 16))
-
+                        
     def updateVisible(self, position, radius, camera):
         self.visible = np.zeros((self.width, self.height), dtype=bool)
 
-        x1 = max(position[0] - radius, 0)
-        x2 = min(position[0] + radius + 1, self.width - 1)
-        y1 = max(position[1] - radius, 0)
-        y2 = min(position[1] + radius + 1, self.height - 1)
-
-        self.visible[x1:x2, y1:y2] = 1
-        self.memory[x1:x2, y1:y2] = 1
+        lighting.computeVisibility(self, position, radius)
 
         self.buildSurface(camera)
 
     #Return a random valid position inside a room
-    def getRandomRoomPosition(self, rng):
-        i = rng.integers(0, len(self.rooms))
+    def getRandomRoomPosition(self, rng, room_num=-1):
+        if -1 < room_num < len(self.rooms):
+            i = room_num
+        else:
+            i = rng.integers(0, len(self.rooms))
         x = rng.integers(0, self.rooms[i][2])
         y = rng.integers(0, self.rooms[i][3])
 
@@ -119,8 +117,13 @@ class Map:
 
         return (self.rooms[i][0] + x, self.rooms[i][1] + y)
     
-    def checkValidTile(self, dest):
-        return self.solid[dest[0]][dest[1]] == 0
+    def setVisible(self, xpos, ypos):
+        if 0 <= xpos < self.width and 0 <= ypos < self.height:
+            self.visible[xpos][ypos] = 1
+            self.memory[xpos][ypos] = 1
+    
+    def checkSolid(self, xpos, ypos):
+        return (xpos < 0 or xpos >= self.width or ypos < 0 or ypos >= self.height or self.solid[xpos][ypos])
     
     def pickupItemAtTile(self, dest):
         if self.items[dest[0]][dest[1]]:

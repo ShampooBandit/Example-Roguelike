@@ -6,7 +6,7 @@ class Actor(pygame.sprite.Sprite):
         self.image = sprite
         self.position = position
         self.rect = pygame.Rect(position[0] * 16, position[1] * 16, 16, 16)
-        self.vision_radius = 6
+        self.vision_radius = 8
         self.equipment = {
             'Left Hand': None,
             'Right Hand': None,
@@ -43,19 +43,19 @@ class Player(Actor):
         action = ''
         match key:
             case pygame.K_a | pygame.K_LEFT:
-                if dungeon.checkValidTile((self.position[0]-1, self.position[1])):
+                if not dungeon.checkSolid(self.position[0]-1, self.position[1]):
                     action = 'left'
                     self.setPosition((self.position[0] - 1, self.position[1]))
             case pygame.K_d | pygame.K_RIGHT:
-                if dungeon.checkValidTile((self.position[0]+1, self.position[1])):
+                if not dungeon.checkSolid(self.position[0]+1, self.position[1]):
                     action = 'right'
                     self.setPosition((self.position[0] + 1, self.position[1]))
             case pygame.K_w | pygame.K_UP:
-                if dungeon.checkValidTile((self.position[0], self.position[1]-1)):
+                if not dungeon.checkSolid(self.position[0], self.position[1]-1):
                     action = 'up'
                     self.setPosition((self.position[0], self.position[1] - 1))
             case pygame.K_s | pygame.K_DOWN:
-                if dungeon.checkValidTile((self.position[0], self.position[1]+1)):
+                if not dungeon.checkSolid(self.position[0], self.position[1]+1):
                     action = 'down'
                     self.setPosition((self.position[0], self.position[1] + 1))
             case pygame.K_KP_ENTER | pygame.K_RETURN:
