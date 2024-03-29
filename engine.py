@@ -30,7 +30,7 @@ class Engine:
         self.handlePlayerAction(key)
 
     def handlePlayerAction(self, key):
-        took_action = self.player.handleInput(key, self.dungeon)
+        took_action = self.player.handleInput(key, self.dungeon, self.rng)
 
         if took_action:
             self.updateCamera()

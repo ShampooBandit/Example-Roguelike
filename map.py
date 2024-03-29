@@ -125,10 +125,13 @@ class Map:
     def checkSolid(self, xpos, ypos):
         return (xpos < 0 or xpos >= self.width or ypos < 0 or ypos >= self.height or self.solid[xpos][ypos])
     
-    def pickupItemAtTile(self, dest):
-        if self.items[dest[0]][dest[1]]:
-            it = self.items[dest[0]][dest[1]]
-            self.items[dest[0]][dest[1]] = None
+    def checkEnemyAtTile(self, xpos, ypos):
+        return self.enemies[xpos][ypos]
+    
+    def pickupItemAtTile(self, xpos, ypos):
+        if self.items[xpos][ypos]:
+            it = self.items[xpos][ypos]
+            self.items[xpos][ypos] = None
             return it
         else:
             return None

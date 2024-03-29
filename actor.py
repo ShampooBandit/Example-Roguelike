@@ -1,4 +1,5 @@
 import pygame
+import math
 
 class Actor(pygame.sprite.Sprite):
     def __init__(self, sprite, position):
@@ -18,10 +19,12 @@ class Actor(pygame.sprite.Sprite):
             'Legs': None,
             'Feet': None
         }
-        #Stats in order of HP, MP, Strength, Defence, Intelligence, Agility
-        self.base_stats = [10, 0, 3, 2, 2, 2]
-        self.current_stats = [10, 0, 3, 2, 2, 2]
+        #Stats in order of HP, MP, Strength, Defence, Intelligence, Mind, Agility, Luck
+        self.base_stats = [10, 0, 1, 1, 1, 1, 1, 1]
+        self.current_stats = [10, 0, 1, 1, 1, 1, 1, 1]
         self.inventory = []
+        self.skills = {}
+        self.name = ''
 
     def update(self):
         pass
@@ -33,39 +36,82 @@ class Actor(pygame.sprite.Sprite):
         self.rect[0] = (self.position[0] - camera[0]) * 16 + 320
         self.rect[1] = (self.position[1] - camera[1]) * 16 + 32
 
+    def attackTarget(self, target, rng):
+        if self.rollToHit(target, rng):
+            dmg_mult = rng.integers(80, 120)
+            base_dmg = self.current_stats[2] - target.current_stats[3]
+            dmg = math.round(base_dmg * (dmg_mult / 100))
+            target.current_stats[0] -= dmg
+            return (str(target.name), str(dmg))
+        else:
+            return (str(target.name), 'miss')
+
+    def rollToHit(self, target, rng):
+        roll = rng.integers(0, 100) + (self.current_stats[7] / 2)
+        dv = (self.current_stats[6] / target.current_stats[6]) * 100
+        return (roll <= dv)
+    
+    def updateStats(self):
+        self.current_stats = self.base_stats.copy()
+        for value in self.equipment.values():
+            if value:
+                i = 0
+                for stat in value.stats:
+                    self.current_stats[i] += stat
+                    i += 1
+
 class Player(Actor):
     def __init__(self, sprite, position):
         super().__init__(sprite, position)
-        self.base_stats = [25, 0, 3, 2, 2, 2]
-        self.current_stats = [25, 0, 3, 2, 2, 2]
+        self.base_stats = [25, 10, 1, 1, 1, 1, 1, 1]
+        self.current_stats = [25, 10, 1, 1, 1, 1, 1, 1]
+        self.bag_size = 10
+        self.name = 'Player'
 
-    def handleInput(self, key, dungeon):
+    def handleInput(self, key, dungeon, rng):
         action = ''
+        info = ''
         match key:
             case pygame.K_a | pygame.K_LEFT:
-                if not dungeon.checkSolid(self.position[0]-1, self.position[1]):
+                enemy = dungeon.checkEnemyAtTile(self.position[0]-1, self.position[1])
+                if enemy:
+                    action = 'attack'
+                    info = self.attackTarget(enemy, rng)
+                elif not dungeon.checkSolid(self.position[0]-1, self.position[1]):
                     action = 'left'
                     self.setPosition((self.position[0] - 1, self.position[1]))
             case pygame.K_d | pygame.K_RIGHT:
-                if not dungeon.checkSolid(self.position[0]+1, self.position[1]):
+                enemy = dungeon.checkEnemyAtTile(self.position[0]+1, self.position[1])
+                if enemy:
+                    action = 'attack'
+                    info = self.attackTarget(enemy, rng)
+                elif not dungeon.checkSolid(self.position[0]+1, self.position[1]):
                     action = 'right'
                     self.setPosition((self.position[0] + 1, self.position[1]))
             case pygame.K_w | pygame.K_UP:
-                if not dungeon.checkSolid(self.position[0], self.position[1]-1):
+                enemy = dungeon.checkEnemyAtTile(self.position[0], self.position[1]-1)
+                if enemy:
+                    action = 'attack'
+                    info = self.attackTarget(enemy, rng)
+                elif not dungeon.checkSolid(self.position[0], self.position[1]-1):
                     action = 'up'
                     self.setPosition((self.position[0], self.position[1] - 1))
             case pygame.K_s | pygame.K_DOWN:
-                if not dungeon.checkSolid(self.position[0], self.position[1]+1):
+                enemy = dungeon.checkEnemyAtTile(self.position[0], self.position[1]+1)
+                if enemy:
+                    action = 'attack'
+                    info = self.attackTarget(enemy, rng)
+                elif not dungeon.checkSolid(self.position[0], self.position[1]+1):
                     action = 'down'
                     self.setPosition((self.position[0], self.position[1] + 1))
             case pygame.K_KP_ENTER | pygame.K_RETURN:
-                item = dungeon.pickupItemAtTile(self.position)
+                item = dungeon.pickupItemAtTile(self.position[0], self.position[1])
                 if item:
                     self.inventory.append(item)
                     action = 'pickup'
                     self.autoEquip(self.inventory[-1])
         
-        return action
+        return action, info
     
     def autoEquip(self, item):
         match item.slot:
@@ -75,39 +121,18 @@ class Player(Actor):
                 elif self.equipment['Right Hand'] == None:
                     self.equipment['Right Hand'] = item
         self.updateStats()
-
-    def updateStats(self):
-        self.current_stats = self.base_stats.copy()
-        for value in self.equipment.values():
-            if value:
-                i = 0
-                for stat in value.stats:
-                    self.current_stats[i] += stat
-                    i += 1
     
     def draw(self, surface, font):
-        y = 32
-        for k, v in self.equipment.items():
-            if v:
-                text = font.render(k + ' ' + v.name, False, pygame.Color('white'))
-            else:
-                text = font.render(k + ' None', False, pygame.Color('white'))
-            surface.blit(text, (0, y))
-            y += 16
-
-        y += 16
-        for n in self.current_stats:
-            text = font.render(str(n), False, pygame.Color('white'))
-            surface.blit(text, (0, y))
-            y += 16
-
-        y = 32
-        for i in self.inventory:
-            text = font.render(i.name, False, pygame.Color('white'))
-            surface.blit(text, (1000, y))
-            y += 16
         surface.blit(self.image, self.rect)
     
 class Enemy(Actor):
+    def __init__(self, sprite, position):
+        super().__init__(sprite, position)
+        self.state = 'idle'
+        self.destination = None
+        self.name = 'Bug'
+
     def update(self):
-        pass
+        match self.state:
+            case 'idle':
+                pass
