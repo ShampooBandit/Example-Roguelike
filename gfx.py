@@ -12,10 +12,15 @@ f4 = os.path.join(directory, 'Wall.png')
 directory = 'gfx/Items'
 f5 = os.path.join(directory, 'ShortWep.png')
 
+directory = 'gfx/GUI'
+f6 = os.path.join(directory, 'ui_big_pieces.png')
+
 PLAYER_SPRITES = []
 MONSTER_SPRITES = []
 FLOOR_SPRITES = []
 WEAPON_SPRITES = []
+GUI_SPRITES = []
+GUI_BOX_SPRITES = []
 
 if os.path.isfile(f1):
     PLAYER_SPRITE_SHEET = pygame.image.load_extended(f1)
@@ -58,6 +63,20 @@ if os.path.isfile(f5):
     WEAPON_SPRITE_SHEET = WEAPON_SPRITE_SHEET.convert_alpha()
 
     WEAPON_SPRITES.append(WEAPON_SPRITE_SHEET.subsurface(0,0,16,16))
+
+if os.path.isfile(f6):
+    GUI_SPRITE_SHEET = pygame.image.load_extended(f6)
+    GUI_SPRITE_SHEET = GUI_SPRITE_SHEET.convert_alpha()
+    #GUI_SPRITE_SHEET.set_colorkey(pygame.Color(255, 255, 255))
+
+    GUI_BOX_SPRITES.append(GUI_SPRITE_SHEET.subsurface(16, 40, 32, 32)) #Top left
+    GUI_BOX_SPRITES.append(GUI_SPRITE_SHEET.subsurface(82, 40, 32, 32)) #Top right
+    GUI_BOX_SPRITES.append(GUI_SPRITE_SHEET.subsurface(478, 80, 32, 32)) #Bottom left
+    GUI_BOX_SPRITES.append(GUI_SPRITE_SHEET.subsurface(544, 80, 32, 32)) #Bottom right
+    GUI_BOX_SPRITES.append(GUI_SPRITE_SHEET.subsurface(49, 40, 32, 32)) #Top middle
+    GUI_BOX_SPRITES.append(GUI_SPRITE_SHEET.subsurface(478, 24, 32, 32)) #Left middle
+    GUI_BOX_SPRITES.append(GUI_SPRITE_SHEET.subsurface(544, 24, 32, 32)) #Right middle
+    GUI_BOX_SPRITES.append(GUI_SPRITE_SHEET.subsurface(511, 80, 32, 32)) #Bottom middle
 
 def getTileSprite(index, tiles, center, size):
     x = center[0]

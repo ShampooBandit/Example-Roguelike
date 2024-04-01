@@ -3,6 +3,7 @@ import numpy as np
 import actor
 import gfx
 import map
+import ui
 
 class Engine:
     def __init__(self):
@@ -11,6 +12,7 @@ class Engine:
         self.camera = pygame.Rect(0, 0, 40, 40)
         self.player = actor.Player(gfx.PLAYER_SPRITES[0], (32, 32))
         self.dungeon = map.Map()
+        self.gui = ui.GUI()
         self.rng = np.random.default_rng()
         self.dungeon.generateMap(self.rng)
         self.player.setPosition(self.dungeon.getRandomRoomPosition(self.rng))
@@ -57,6 +59,7 @@ class Engine:
             self.repeat_key = -1
 
     def draw(self, screen_surface, font):
+        self.gui.draw(screen_surface)
         self.dungeon.draw(screen_surface)
         self.dungeon.visible_enemies.draw(screen_surface)
         self.player.draw(screen_surface, font)

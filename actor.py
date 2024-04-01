@@ -34,13 +34,13 @@ class Actor(pygame.sprite.Sprite):
 
     def adjustToCamera(self, camera):
         self.rect[0] = (self.position[0] - camera[0]) * 16 + 320
-        self.rect[1] = (self.position[1] - camera[1]) * 16 + 32
+        self.rect[1] = (self.position[1] - camera[1]) * 16 + 40
 
     def attackTarget(self, target, rng):
         if self.rollToHit(target, rng):
             dmg_mult = rng.integers(80, 120)
             base_dmg = self.current_stats[2] - target.current_stats[3]
-            dmg = math.round(base_dmg * (dmg_mult / 100))
+            dmg = math.ceil(base_dmg * (dmg_mult / 100))
             target.current_stats[0] -= dmg
             return (str(target.name), str(dmg))
         else:

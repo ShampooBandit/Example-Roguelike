@@ -86,7 +86,7 @@ class Map:
                         self.surface.blit(gfx.getTileSprite(self.tiles[xpos][ypos], self.tiles, (xpos, ypos), (self.width, self.height)), (x * 16, y * 16))
                         if self.enemies[xpos][ypos]:
                             self.visible_enemies.add(self.enemies[xpos][ypos])
-                            self.surface.blit(self.enemies[xpos][ypos].image, (x * 16, y * 16))
+                            #self.surface.blit(self.enemies[xpos][ypos].image, (x * 16, y * 16))
                         if self.items[xpos][ypos]:
                             self.surface.blit(self.items[xpos][ypos].image, (x * 16, y * 16))
                     elif self.memory[xpos][ypos]:
@@ -138,4 +138,4 @@ class Map:
             
 
     def draw(self, surf):
-        surf.blit(self.surface, (320, 32))
+        surf.blit(self.surface, (320, 40))
